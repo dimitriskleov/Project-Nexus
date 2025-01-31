@@ -3,7 +3,7 @@ import random
 
 app = FastAPI()
 
-@app.get("/random_number")
-async def get_random_number():
-    random_num = random.randint(1, 100)
-    return {"random_number": random_num}
+@app.get("/api/dice_api")
+async def roll_dice():
+    dice_roll = random.randint(1, 6)
+    return {"dice_roll": dice_roll}
