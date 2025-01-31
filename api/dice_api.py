@@ -1,13 +1,9 @@
-from flask import Flask, jsonify
+from fastapi import FastAPI
 import random
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/random_number', methods=['GET'])
-def random_number():
-    # Generate a random number between 1 and 100
+@app.get("/random_number")
+async def get_random_number():
     random_num = random.randint(1, 100)
-    return jsonify({'random_number': random_num})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return {"random_number": random_num}
