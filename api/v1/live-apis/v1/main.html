@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter API Results</title>
+    <script>
+        // Function to fetch and filter the data
+        async function fetchAndFilterData() {
+            try {
+                // Fetching the raw data from the URL
+                const response = await fetch('https://raw.githubusercontent.com/dimitriskleov/project-nexus-xi-apis/refs/heads/main/apis');
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                // Assuming the response is in JSON format, parse the response
+                const data = await response.json();
+
+                // Filter lines that contain the word "tet"
+                const filteredData = data.filter(item => {
+                    return item.includes('tet');
+                });
+
+                // Display the filtered data
+                const resultDiv = document.getElementById('result');
+                if (filteredData.length > 0) {
+                    resultDiv.innerHTML = `<ul>${filteredData.map(item => `<li>${item}</li>`).join('')}</ul>`;
+                } else {
+                    resultDiv.innerHTML = 'No lines found containing "tet".';
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('result').innerHTML = 'Error fetching data.';
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <h1>Filtered API Results</h1>
+
+    <button onclick="fetchAndFilterData()">Get Lines Containing 'tet'</button>
+
+    <div id="result"></div>
+
+</body>
+</html>
