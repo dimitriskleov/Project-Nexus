@@ -1,5 +1,5 @@
 fastapi
 uvicorn
 requests
-transformers
-torch
+gpt-2-simple
+tensorflow==1.15
