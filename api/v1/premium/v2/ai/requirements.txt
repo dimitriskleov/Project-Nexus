@@ -2,4 +2,4 @@ fastapi
 uvicorn
 requests
 gpt-2-simple
-tensorflow==1.15
+tensorflow
