@@ -1,15 +1,14 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
-import torch
+import gpt_2_simple as gpt2
+import os
 
 # Initialize FastAPI app
 app = FastAPI()
 
-# Load GPT-2 model and tokenizer (this happens once when the app starts)
-model_name = "gpt2"
-model = GPT2LMHeadModel.from_pretrained(model_name)
-tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+# Load the GPT-2 model once at startup
+MODEL_NAME = "124M"  # You can choose other model sizes like "355M", "774M", etc.
+gpt2.load_gpt2(model_name=MODEL_NAME)
 
 # Route to handle the AI requests
 class AIRequest(BaseModel):
@@ -20,14 +19,9 @@ async def generate_text(request: AIRequest):
     # Prepare the input text
     input_text = request.text
     
-    # Tokenize input text
-    inputs = tokenizer.encode(input_text, return_tensors="pt")
-    
-    # Generate response using the GPT-2 model
-    outputs = model.generate(inputs, max_length=150, num_return_sequences=1, no_repeat_ngram_size=2)
-    
-    # Decode the generated text
-    generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    return {"generated_text": generated_text}
+    # Start a TensorFlow session and generate the text
+    sess = gpt2.start_tf_sess()
+    response = gpt2.generate(sess, model_name=MODEL_NAME, prefix=input_text, return_as_list=True, length=150)
 
+    # Return the generated text
+    return {"generated_text": response[0]}
