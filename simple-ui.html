@@ -1,0 +1,55 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Moon, Sun, Home, Code } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function ProjectNexusXI() {
+  const [darkMode, setDarkMode] = useState(true);
+  const [activeTab, setActiveTab] = useState("home");
+  const [apis, setApis] = useState([]);
+
+  useEffect(() => {
+    fetch("https://raw.githubusercontent.com/dimitriskleov/project-nexus-xi-apis/refs/heads/main/apis")
+      .then((response) => response.text())
+      .then((data) => setApis(data.split("\n")));
+  }, []);
+
+  return (
+    <div className={`min-h-screen p-6 transition-all ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+      <header className="flex justify-between items-center mb-6">
+        <h1 className="text-5xl font-extrabold tracking-wide text-blue-400">Project Nexus XI - Simple UI</h1>
+        <Button onClick={() => setDarkMode(!darkMode)}>
+          {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </Button>
+      </header>
+
+      <motion.nav className="flex gap-4 mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        <Button onClick={() => setActiveTab("home")} className={activeTab === "home" ? "bg-blue-500 text-white" : "bg-gray-700 text-gray-300"}><Home size={20} /> Home</Button>
+        <Button onClick={() => setActiveTab("api")} className={activeTab === "api" ? "bg-blue-500 text-white" : "bg-gray-700 text-gray-300"}><Code size={20} /> APIs</Button>
+      </motion.nav>
+
+      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        {activeTab === "home" && (
+          <Card className="max-w-3xl mx-auto p-6 bg-opacity-80">
+            <CardContent>
+              <p className="text-xl text-gray-300">This project offers APIs, mostly free, with some premium options at a reasonable price.</p>
+            </CardContent>
+          </Card>
+        )}
+        {activeTab === "api" && (
+          <Card className="max-w-3xl mx-auto p-6 bg-opacity-80">
+            <CardContent>
+              <h2 className="text-2xl font-bold mb-4">Available APIs</h2>
+              <ul className="list-disc pl-6 text-lg text-gray-300">
+                {apis.map((api, index) => (
+                  <li key={index}>{api}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+      </motion.section>
+    </div>
+  );
+}
