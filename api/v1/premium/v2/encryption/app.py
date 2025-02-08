@@ -21,7 +21,7 @@ def encrypt_text(plain_text: str) -> str:
     encrypted_text = "".join(ENCRYPTION_MAP.get(char, char) for char in plain_text.lower())
     return encrypted_text
 
-@app.post("/encrypt")
+@app.post("/api/v1/premium/v2/encryption/app")
 def encrypt(data: dict, api_key: str = Depends(get_api_key)):
     text = data.get("text")
     if not text:
