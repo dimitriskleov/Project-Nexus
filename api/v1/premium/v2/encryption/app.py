@@ -1,9 +1,4 @@
 from fastapi import FastAPI, HTTPException, Depends
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-import os
-import base64
-from typing import Dict
 
 # API Key for authentication
 API_KEY = "supersecretapikey"
@@ -15,25 +10,19 @@ def get_api_key(api_key: str):
 
 app = FastAPI()
 
-# Generate a secure 256-bit key (should be stored securely)
-SECRET_KEY = os.urandom(32)  # AES-256 key
-IV = os.urandom(16)  # Initialization Vector
+# Custom simple encryption method using character mapping
+ENCRYPTION_MAP = {
+    "a": "@", "b": "8", "c": "(", "d": "#", "e": "3", "f": "!", "g": "6", "h": "4", "i": "1",
+    "j": "?", "k": "<", "l": "7", "m": "M", "n": "N", "o": "0", "p": "%", "q": "Q", "r": "2",
+    "s": "$", "t": "+", "u": "U", "v": "V", "w": "W", "x": "*", "y": "Y", "z": "Z"
+}
 
 def encrypt_text(plain_text: str) -> str:
-    # Pad the text to be AES block size compliant
-    padder = padding.PKCS7(128).padder()
-    padded_data = padder.update(plain_text.encode()) + padder.finalize()
-    
-    # Encrypt using AES-256 in CBC mode
-    cipher = Cipher(algorithms.AES(SECRET_KEY), modes.CBC(IV))
-    encryptor = cipher.encryptor()
-    encrypted_bytes = encryptor.update(padded_data) + encryptor.finalize()
-    
-    # Encode the result in base64 for easy transmission
-    return base64.b64encode(IV + encrypted_bytes).decode()
+    encrypted_text = "".join(ENCRYPTION_MAP.get(char, char) for char in plain_text.lower())
+    return encrypted_text
 
 @app.post("/encrypt")
-def encrypt(data: Dict[str, str], api_key: str = Depends(get_api_key)):
+def encrypt(data: dict, api_key: str = Depends(get_api_key)):
     text = data.get("text")
     if not text:
         raise HTTPException(status_code=400, detail="Text is required")
